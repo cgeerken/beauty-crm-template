@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: salons
+    // Document ID: salonId (usually matches user UID)
+    // Fields:
+    //   - name: string (required)
+    //   - ownerEmail: string (required)
+    //   - googleCalendarTokens: string (optional)
+    //
+    // Collection: salons/{salonId}/appointments
+    // Document ID: appointmentId
+    // Fields:
+    //   - salonId: string (required)
+    //   - clientName: string (required)
+    //   - serviceName: string (required)
+    //   - startTime: string (required, ISO 8601)
+    //   - endTime: string (required, ISO 8601)
+    //   - status: string (optional)
+    //   - googleEventId: string (optional)
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(salonId) {
+      return isAuthenticated() && request.auth.uid == salonId;
+    }
+
+    function isValidSalon(data) {
+      return data.keys().hasAll(['name', 'ownerEmail']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.ownerEmail is string && data.ownerEmail.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidAppointment(data) {
+      return data.keys().hasAll(['salonId', 'clientName', 'serviceName', 'startTime', 'endTime']) &&
+             data.salonId is string &&
+             data.clientName is string && data.clientName.size() > 0 && data.clientName.size() < 100 &&
+             data.serviceName is string && data.serviceName.size() > 0 && data.serviceName.size() < 100 &&
+             data.startTime is string && data.endTime is string;
+    }
+
+    // Rules
+    match /salons/{salonId} {
+      allow read: if isOwner(salonId);
+      allow create: if isOwner(salonId) && isValidSalon(request.resource.data);
+      allow update: if isOwner(salonId) && isValidSalon(request.resource.data);
+
+      match /appointments/{appointmentId} {
+        allow read: if isOwner(salonId);
+        allow create: if isOwner(salonId) && isValidAppointment(request.resource.data);
+        allow update: if isOwner(salonId) && isValidAppointment(request.resource.data);
+        allow delete: if isOwner(salonId);
+      }
+    }
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

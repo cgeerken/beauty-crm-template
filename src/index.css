@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-blush: #F8E1E7;
+  --color-brand-rose: #D4A5A5;
+  --color-brand-ivory: #FCF9F7;
+  --color-brand-taupe: #2D2828; /* Darkened from #4A4444 for better contrast */
+  --color-brand-champagne: #F1E5D1;
+  --color-brand-nude: #F5EBE0;
+  
+  /* Dark Mode Colors */
+  --color-dark-bg: #1A1A1A;
+  --color-dark-card: #262626;
+  --color-dark-silver: #3D3D3D;
+  --color-gold-bright: #D4AF37;
+  
+  --radius-premium: 24px;
+  --radius-premium-lg: 32px;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-ivory text-brand-taupe font-sans antialiased transition-colors duration-500;
+  }
+  
+  .dark body {
+    @apply bg-dark-bg text-white/90;
+  }
+}
+
+.gold-border-shiny {
+  position: relative;
+  border: 1px solid transparent;
+  background: linear-gradient(var(--gold-bg, #FCF9F7), var(--gold-bg, #FCF9F7)) padding-box,
+              linear-gradient(45deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C) border-box;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.dark .gold-border-shiny {
+  --gold-bg: var(--color-dark-card);
+}
+
+.dark .floating-card {
+  background-color: var(--color-dark-card);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 0 15px 0 rgba(212, 165, 165, 0.05);
+  border: 1px solid rgba(212, 165, 165, 0.1);
+}
+
+.dark .floating-card:hover {
+  border-color: var(--color-gold-bright);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 20px 0 rgba(212, 175, 55, 0.3);
+}
+
+.dark .sidebar-shadow {
+  box-shadow: 10px 0 40px -15px rgba(0, 0, 0, 0.3);
+}
+
+.premium-shadow {
+  box-shadow: 0 12px 40px -12px rgba(74, 68, 68, 0.08);
+}
+
+.floating-card {
+  box-shadow: 0 20px 50px -12px rgba(74, 68, 68, 0.12), 0 0 15px 0 rgba(74, 68, 68, 0.05);
+  border: 1.5px solid rgba(74, 68, 68, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.floating-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 60px -12px rgba(212, 165, 165, 0.25), 0 0 20px 0 rgba(212, 165, 165, 0.2);
+  border-color: rgba(212, 165, 165, 0.5);
+}
+
+.sidebar-shadow {
+  box-shadow: 10px 0 40px -15px rgba(74, 68, 68, 0.05);
+}
+
+.glass-card {
+  @apply bg-white/70 backdrop-blur-md border border-white/20;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-brand-rose/20 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-brand-rose/40;
+}
